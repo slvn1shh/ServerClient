@@ -1,20 +1,20 @@
 import java.io.*;
-import java.util.*;
 import java.net.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import static java.lang.System.out;
 class  ChatClient extends JFrame implements ActionListener {
-    String uname;
-    PrintWriter pw;
-    BufferedReader br;
-    JTextArea  taMessages;
-    JTextField tfInput;
-    JButton btnSend,btnExit;
-    Socket client;
+    private final String uname;
+    private PrintWriter pw;
+    private BufferedReader br;
+    private JTextArea  taMessages;
+    private JTextField tfInput;
+    private JButton btnSend;
+    private JButton btnExit;
+    private Socket client;
 
-    public ChatClient(String uname,String servername) throws Exception {
+    private ChatClient(String uname, String servername) throws Exception {
         super(uname);  // set title for frame
         this.uname = uname;
         client  = new Socket(servername,9999);
@@ -25,7 +25,7 @@ class  ChatClient extends JFrame implements ActionListener {
         new MessagesThread().start();  // create thread to listen for messages
     }
 
-    public void buildInterface() {
+    private void buildInterface() {
         btnSend = new JButton("Send");
         btnExit = new JButton("Exit");
         taMessages = new JTextArea();
@@ -54,18 +54,21 @@ class  ChatClient extends JFrame implements ActionListener {
             System.exit(0);
         } else {
             // send message to server
+            taMessages.append(uname + ":" + tfInput.getText() + System.lineSeparator());
             pw.println(tfInput.getText());
+            tfInput.setText("");
         }
     }
 
     public static void main(String ... args) {
 
         // take username from user
-        String name = JOptionPane.showInputDialog(null,"Enter your name :", "Username",
-                JOptionPane.PLAIN_MESSAGE);
-        String servername = "localhost";
+        String name = JOptionPane.showInputDialog(null,"Enter your name :",
+                "Username", JOptionPane.PLAIN_MESSAGE);
+        String servername = JOptionPane.showInputDialog(null,"Enter server address: ",
+                "Server", JOptionPane.WARNING_MESSAGE);
         try {
-            new ChatClient( name ,servername);
+            new ChatClient(name ,servername);
         } catch(Exception ex) {
             out.println( "Error --> " + ex.getMessage());
         }
@@ -77,11 +80,12 @@ class  ChatClient extends JFrame implements ActionListener {
         public void run() {
             String line;
             try {
+                //noinspection InfiniteLoopStatement
                 while(true) {
                     line = br.readLine();
                     taMessages.append(line + "\n");
                 } // end of while
-            } catch(Exception ex) {}
+            } catch(Exception ignored) {}
         }
     }
 } //  end of client
