@@ -16,7 +16,7 @@ class  ChatServer {
                 "Enter server ip", JOptionPane.QUESTION_MESSAGE, null, null, ip.getHostAddress()); // pane for start
 
         try { // checking if address is reachable
-            serverAddress = new ServerSocket(9999, 10, InetAddress.getByName(serverName));
+            serverAddress = new ServerSocket(80, 10, InetAddress.getByName(serverName));
         } catch (Exception ex) { // if address is unreachable no way to continue executing..
             JOptionPane.showMessageDialog(null,
                     "An error occurred! (it may be a wrong ip address, which is unreachable.) Restart and try again!",
