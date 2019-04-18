@@ -52,7 +52,7 @@ class  ChatServer {
     private void sendSingleServerMessage(String userName, String message){
         for ( HandleClient c : clients )
             if (c.getUserName().equals(userName) )
-                c.sendMessage("System",message);
+                c.sendMessage("System",userName + message);
     }
 
     private void sendSingleMessage(String userName, String message){
