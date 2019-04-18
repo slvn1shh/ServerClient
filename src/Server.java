@@ -1,4 +1,5 @@
 // Chat Server runs at port no. 9999
+import javax.swing.*;
 import java.io.*;
 import java.util.*;
 import java.net.*;
@@ -8,12 +9,19 @@ class  ChatServer {
     //private final Vector<String> users = new Vector<>();
     private final Vector<HandleClient> clients = new Vector<>();
     private void process() throws Exception  {
-        ServerSocket server = new ServerSocket(9999,10);
+        InetAddress ip = InetAddress.getLocalHost();
+        String hostname = ip.getHostName();
+        String serverName = (String) JOptionPane.showInputDialog(null,
+                "Current local domain, ip: "+ ip + System.lineSeparator() + "Enter server address: ",
+                "Enter server ip", JOptionPane.QUESTION_MESSAGE,null,null, ip.getHostAddress());
+        ServerSocket server = new ServerSocket(9999,10,InetAddress.getByName(serverName));
         out.println("Server Started...");
+        out.println("Server's ip: " + server.getInetAddress().getHostAddress());
         //noinspection InfiniteLoopStatement
         while(true) {
             Socket client = server.accept();
             HandleClient c = new HandleClient(client);
+            out.println("Client with name: "+ c.getUserName() + " is connected!");
             clients.add(c);
         }  // end of while
     }
