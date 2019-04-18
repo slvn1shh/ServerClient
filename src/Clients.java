@@ -14,7 +14,7 @@ class  ChatClient extends JFrame implements ActionListener {
     private ChatClient(String userName, String serverName) throws Exception {
         super(userName);  // set title for frame
         this.userName = userName;
-        Socket client = new Socket(serverName, 80);
+        Socket client = new Socket(serverName, 9999);
         br = new BufferedReader( new InputStreamReader( client.getInputStream()) ) ;
         pw = new PrintWriter(client.getOutputStream(),true);
         pw.println(userName);  // send name to server
