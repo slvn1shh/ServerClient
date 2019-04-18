@@ -34,7 +34,7 @@ class  ChatServer {
             clients.add(c);
             sendSingleServerMessage(c.getUserName(),"Welcome to chat server by vyacheslav_sharapov@nixsolutions.com!" +
                     System.lineSeparator() + "invite your friends, ip is: " + serverAddress.getInetAddress().getHostAddress());
-            sendSingleMessage(c.getUserName()," is connected! WELCOME!");
+            sendSingleMessage(c.getUserName(),c.getUserName() + " is connected! WELCOME!");
         }  // end of while
     }
 
@@ -52,7 +52,7 @@ class  ChatServer {
     private void sendSingleServerMessage(String userName, String message){
         for ( HandleClient c : clients )
             if (c.getUserName().equals(userName) )
-                c.sendMessage("System",userName + message);
+                c.sendMessage("System", message);
     }
 
     private void sendSingleMessage(String userName, String message){
