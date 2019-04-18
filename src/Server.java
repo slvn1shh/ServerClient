@@ -8,32 +8,59 @@ import static java.lang.System.out;
 class  ChatServer {
     //private final Vector<String> users = new Vector<>();
     private final Vector<HandleClient> clients = new Vector<>();
+    private ServerSocket serverAddress;
     private void process() throws Exception  {
         InetAddress ip = InetAddress.getLocalHost();
-        String hostname = ip.getHostName();
         String serverName = (String) JOptionPane.showInputDialog(null,
-                "Current local domain, ip: "+ ip + System.lineSeparator() + "Enter server address: ",
-                "Enter server ip", JOptionPane.QUESTION_MESSAGE,null,null, ip.getHostAddress());
-        ServerSocket server = new ServerSocket(9999,10,InetAddress.getByName(serverName));
-        out.println("Server Started...");
-        out.println("Server's ip: " + server.getInetAddress().getHostAddress());
+                "Current local domain, ip: " + ip + System.lineSeparator() + "Enter server address: ",
+                "Enter server ip", JOptionPane.QUESTION_MESSAGE, null, null, ip.getHostAddress()); // pane for start
+
+        try { // checking if address is reachable
+            serverAddress = new ServerSocket(9999, 10, InetAddress.getByName(serverName));
+        } catch (Exception ex) { // if address is unreachable no way to continue executing..
+            JOptionPane.showMessageDialog(null,
+                    "An error occurred! (it may be a wrong ip address, which is unreachable.) Restart and try again!",
+                    "Error!",JOptionPane.ERROR_MESSAGE);
+            System.exit(-1);
+        }
+        JOptionPane.showMessageDialog(null,
+                "Server started successfully! Ip is: " + serverAddress.getInetAddress().getHostAddress());
+        out.println("Server's ip: " + serverAddress.getInetAddress().getHostAddress());
         //noinspection InfiniteLoopStatement
         while(true) {
-            Socket client = server.accept();
+            Socket client = serverAddress.accept();
             HandleClient c = new HandleClient(client);
             out.println("Client with name: "+ c.getUserName() + " is connected!");
             clients.add(c);
+            sendSingleServerMessage(c.getUserName(),"Welcome to chat server by vyacheslav_sharapov@nixsolutions.com!" +
+                    System.lineSeparator() + "invite your friends, ip is: " + serverAddress.getInetAddress().getHostAddress());
+            sendSingleMessage(c.getUserName()," is connected! WELCOME!");
         }  // end of while
     }
+
     public static void main(String ... args) throws Exception {
         new ChatServer().process();
     } // end of main
+
     private void broadcast(String user, String message)  {
         // send message to all connected users
         for ( HandleClient c : clients )
             if ( ! c.getUserName().equals(user) )
                 c.sendMessage(user,message);
     }
+
+    private void sendSingleServerMessage(String userName, String message){
+        for ( HandleClient c : clients )
+            if (c.getUserName().equals(userName) )
+                c.sendMessage("System",message);
+    }
+
+    private void sendSingleMessage(String userName, String message){
+        for ( HandleClient c : clients )
+            if (!c.getUserName().equals(userName) )
+                c.sendMessage("System",message);
+    }
+
     class  HandleClient extends Thread {
         String name;
         BufferedReader input;
@@ -47,8 +74,8 @@ class  ChatServer {
             //users.add(name); // add to vector
             start();
         }
-        void sendMessage(String uname, String msg)  {
-            output.println( uname + ":" + msg);
+        void sendMessage(String userName, String msg)  {
+            output.println(userName + ": " + msg);
         }
 
         String getUserName() {

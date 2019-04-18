@@ -3,7 +3,7 @@ import java.net.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import static java.lang.System.out;
+
 class  ChatClient extends JFrame implements ActionListener {
     private final String userName;
     private PrintWriter pw;
@@ -11,11 +11,10 @@ class  ChatClient extends JFrame implements ActionListener {
     private JTextArea  taMessages;
     private JTextField tfInput;
     private JButton btnExit;
-
-    private ChatClient(String userName, String servername) throws Exception {
+    private ChatClient(String userName, String serverName) throws Exception {
         super(userName);  // set title for frame
         this.userName = userName;
-        Socket client = new Socket(servername, 9999);
+        Socket client = new Socket(serverName, 9999);
         br = new BufferedReader( new InputStreamReader( client.getInputStream()) ) ;
         pw = new PrintWriter(client.getOutputStream(),true);
         pw.println(userName);  // send name to server
@@ -39,20 +38,29 @@ class  ChatClient extends JFrame implements ActionListener {
         bp.add(btnSend);
         bp.add(btnExit);
         add(bp,"South");
+        tfInput.addActionListener(this);
         btnSend.addActionListener(this);
         btnExit.addActionListener(this);
         setSize(500,300);
         setVisible(true);
+        tfInput.requestFocus();
         pack();
     }
 
     public void actionPerformed(ActionEvent evt) {
-        if ( evt.getSource() == btnExit ) {
+        if (evt.getSource() == btnExit) {
             pw.println("end");  // send end to server so that server knows about the termination
             System.exit(0);
+        }
+        if (evt.getSource().equals(KeyEvent.VK_ENTER)){
+            //taMessages.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+            taMessages.append(userName + ": " + tfInput.getText() + System.lineSeparator());
+            pw.println(tfInput.getText());
+            tfInput.setText("");
         } else {
             // send message to server
-            taMessages.append(userName + ":" + tfInput.getText() + System.lineSeparator());
+            //taMessages.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+            taMessages.append(userName + ": " + tfInput.getText() + System.lineSeparator());
             pw.println(tfInput.getText());
             tfInput.setText("");
         }
@@ -61,6 +69,7 @@ class  ChatClient extends JFrame implements ActionListener {
     public static void main(String ... args) {
 
         // take username from user
+
         String name = JOptionPane.showInputDialog(null,"Enter your name :",
                 "Username", JOptionPane.PLAIN_MESSAGE);
         String serverName = JOptionPane.showInputDialog(null,"Enter server address: ",
@@ -69,6 +78,10 @@ class  ChatClient extends JFrame implements ActionListener {
             new ChatClient(name ,serverName);
         } catch(Exception ex) {
             ex.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "An error occurred! (it may be a wrong ip address, which is unreachable.) Restart and try again!",
+                    "Error!",JOptionPane.ERROR_MESSAGE);
+            System.exit(-1);
         }
 
     } // end of main
