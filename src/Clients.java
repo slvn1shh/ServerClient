@@ -96,7 +96,10 @@ class  ChatClient extends JFrame implements ActionListener {
                     line = br.readLine();
                     taMessages.append(line + "\n");
                 } // end of while
-            } catch(Exception ignored) {}
+            } catch(Exception ignored) {
+                JOptionPane.showMessageDialog(null,"Server shutdown! Thanks for using.");
+                System.exit(0);
+            }
         }
     }
 } //  end of client
