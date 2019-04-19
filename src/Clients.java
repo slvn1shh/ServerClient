@@ -12,7 +12,7 @@ class  ChatClient extends JFrame implements ActionListener {
     private JTextField tfInput;
     private JButton btnExit;
     private ChatClient(String userName, String serverName) throws Exception {
-        super(userName);  // set title for frame
+        super("Telegram - " + userName);  // set title for frame
         this.userName = userName;
         Socket client = new Socket(serverName, 9999);
         br = new BufferedReader( new InputStreamReader( client.getInputStream()) ) ;

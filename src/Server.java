@@ -32,7 +32,7 @@ class  ChatServer {
             HandleClient c = new HandleClient(client);
             out.println("Client with name: "+ c.getUserName() + " is connected!");
             clients.add(c);
-            sendSingleServerMessage(c.getUserName(),"Welcome to chat server by vyacheslav_sharapov@nixsolutions.com!" +
+            sendSingleServerMessage(c.getUserName(),"Welcome to chat server!"/*by vyacheslav_sharapov@nixsolutions.com*/ +
                     System.lineSeparator() + "invite your friends, ip is: " + serverAddress.getInetAddress().getHostAddress());
             sendSingleMessage(c.getUserName(),c.getUserName() + " is connected! WELCOME!");
         }  // end of while
