@@ -7,7 +7,7 @@ import static java.lang.System.out;
 
 class  ChatServer {
     //private final Vector<String> users = new Vector<>();
-    private final Vector<HandleClient> clients = new Vector<>();
+    private final ArrayList<HandleClient> clients = new ArrayList<>();
     private ServerSocket serverAddress;
     private void process() throws Exception  {
         InetAddress ip = InetAddress.getLocalHost();
