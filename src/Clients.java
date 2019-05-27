@@ -1,8 +1,12 @@
-import java.io.*;
-import java.net.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 class  ChatClient extends JFrame implements ActionListener {
     private final String userName;
@@ -41,9 +45,9 @@ class  ChatClient extends JFrame implements ActionListener {
         tfInput.addActionListener(this);
         btnSend.addActionListener(this);
         btnExit.addActionListener(this);
-        setSize(500,300);
-        setVisible(true);
         tfInput.requestFocus();
+        setVisible(true);
+        setAlwaysOnTop(true);
         pack();
     }
 
