@@ -46,11 +46,10 @@ class ChatServer extends JFrame{
         //noinspection InfiniteLoopStatement
         while(true)     {
             Socket client = serverAddress.accept();
-
             HandleClient c = new HandleClient(client);
-            out.println("Client with name: "+ c.getUserName() + " is connected!");
-            clients.add(c);
-            addUser(c);
+            out.println("Client with name: " + c.getUserName() + " is connected!");
+            clients.add(c); // to users list
+            addUser(c); // to server UI
             sendSingleServerMessage(c.getUserName(),"Welcome to chat server!"/*by vyacheslav_sharapov@nixsolutions.com*/ +
                     System.lineSeparator() + "invite your friends, ip is: " + serverAddress.getInetAddress().getHostAddress());
             sendSingleMessage(c.getUserName(),c.getUserName() + " is connected! WELCOME!");
@@ -111,9 +110,6 @@ class ChatServer extends JFrame{
         serverLog.append("(" + DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalDateTime.now()) + ") User " + user.name + " is connected!\n");
 
     }
-    protected void handleTakenNickname(){
-
-    }
     public static void main(String ... args) throws Exception {
         new ChatServer().process();
     } // end of main
@@ -134,7 +130,7 @@ class ChatServer extends JFrame{
     private void sendSingleMessage(String userName, String message){
         for ( HandleClient c : clients )
             if (!c.getUserName().equals(userName) )
-                c.sendMessage("System",message);
+                c.sendMessage("System", message);
     }
 
     class  HandleClient extends Thread {
@@ -147,6 +143,12 @@ class ChatServer extends JFrame{
             output = new PrintWriter ( client.getOutputStream(),true);
             // read name
             name  = input.readLine();
+            for(HandleClient clientSingle : clients){
+                if(name.equals(clientSingle.name)){
+                    output.println("refused_nicknameIsTaken");
+                    client.close();
+                }
+            }
             //users.add(name); // add to vector
             start();
         }
@@ -169,7 +171,6 @@ class ChatServer extends JFrame{
                         //users.remove(name);
                         break;
                     }
-
                     broadcast(name,line); // method  of outer class - send messages to all
                 } // end of while
             } // try
