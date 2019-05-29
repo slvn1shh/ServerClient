@@ -6,7 +6,10 @@ import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.rmi.UnexpectedException;
 
 class  ChatClient extends JFrame implements ActionListener {
     private final String userName;
@@ -16,7 +19,7 @@ class  ChatClient extends JFrame implements ActionListener {
     private JTextField tfInput;
     private JButton btnExit;
     private ChatClient(String userName, String serverName) throws Exception {
-        super("Telegram - " + userName);  // set title for frame
+        super("MsgSender - " + userName);  // set title for frame
         this.userName = userName;
         Socket client = new Socket(serverName, 9999);
         br = new BufferedReader( new InputStreamReader( client.getInputStream()) ) ;
@@ -25,7 +28,6 @@ class  ChatClient extends JFrame implements ActionListener {
         buildInterface();
         new MessagesThread().start();  // create thread to listen for messages
     }
-
     private void buildInterface() {
         JButton btnSend = new JButton("Send");
         btnExit = new JButton("Exit");
@@ -70,18 +72,18 @@ class  ChatClient extends JFrame implements ActionListener {
         }
     }
 
-    public static void main(String ... args) {
+    public static void main(String ... args) throws UnknownHostException {
 
         // take username from user
 
         String name = JOptionPane.showInputDialog(null,"Enter your name :",
                 "Username", JOptionPane.PLAIN_MESSAGE);
-        String serverName = JOptionPane.showInputDialog(null,"Enter server address: ",
-                "Server", JOptionPane.WARNING_MESSAGE);
+        String serverName = (String) JOptionPane.showInputDialog(null,"Enter server address: ",
+                "Server", JOptionPane.WARNING_MESSAGE,null,null, InetAddress.getLocalHost().getHostAddress());
         try {
             new ChatClient(name ,serverName);
         } catch(Exception ex) {
-            ex.printStackTrace();
+           // ex.printStackTrace();
             JOptionPane.showMessageDialog(null,
                     "An error occurred! (it may be a wrong ip address, which is unreachable.) Restart and try again!",
                     "Error!",JOptionPane.ERROR_MESSAGE);
@@ -98,9 +100,16 @@ class  ChatClient extends JFrame implements ActionListener {
                 //noinspection InfiniteLoopStatement
                 while(true) {
                     line = br.readLine();
+                    if(line.contains("db_"))
+                        throw new UnexpectedException("Username is taken! Try another one");
                     taMessages.append(line + "\n");
                 } // end of while
-            } catch(Exception ignored) {
+            } catch (UnexpectedException ex){
+                JOptionPane.showConfirmDialog(null,"Username is already taken! Restart the program and try again!","Error!",
+                        JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE,null);
+                System.exit(-1);
+            }
+            catch(Exception ignored) {
                 JOptionPane.showMessageDialog(null,"Server shutdown! Thanks for using.");
                 System.exit(0);
             }

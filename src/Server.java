@@ -21,6 +21,7 @@ class ChatServer extends JFrame{
     private JTextArea serverLog;
     private int countUsers;
     private JTextField connectedCount;
+    private JScrollPane scrollableLog;
     private ChatServer(){
         countUsers = 0;
     }
@@ -36,7 +37,6 @@ class ChatServer extends JFrame{
             JOptionPane.showMessageDialog(null,
                     "An error occurred! (it may be a wrong ip address, which is unreachable.) Restart and try again!",
                     "Error!",JOptionPane.ERROR_MESSAGE);
-            System.exit(-1);
         }
         JOptionPane.showMessageDialog(null,
                 "Server started successfully! Ip is: " + serverAddress.getInetAddress().getHostAddress());
@@ -44,15 +44,22 @@ class ChatServer extends JFrame{
         // UI_draw
         buildInterface();
         //noinspection InfiniteLoopStatement
-        while(true)     {
+        while(true) {
             Socket client = serverAddress.accept();
             HandleClient c = new HandleClient(client);
+            if (isUserExist(c.getUserName())) {
+                clients.add(c); // to users list
+                sendSingleServerMessage(c.getUserName(), client);
+                clients.remove(c);
+                client.close();
+                continue;
+            }
+            clients.add(c);
             out.println("Client with name: " + c.getUserName() + " is connected!");
-            clients.add(c); // to users list
             addUser(c); // to server UI
-            sendSingleServerMessage(c.getUserName(),"Welcome to chat server!"/*by vyacheslav_sharapov@nixsolutions.com*/ +
+            sendSingleServerMessage(c.getUserName(), "Welcome to chat server!"/*by vyacheslav_sharapov@nixsolutions.com*/ +
                     System.lineSeparator() + "invite your friends, ip is: " + serverAddress.getInetAddress().getHostAddress());
-            sendSingleMessage(c.getUserName(),c.getUserName() + " is connected! WELCOME!");
+            sendSingleMessage(c.getUserName(), c.getUserName() + " is connected! WELCOME!");
         }  // end of while
     }
     private void buildInterface(){
@@ -91,14 +98,19 @@ class ChatServer extends JFrame{
         JLabel serverLogTip = new JLabel();
         serverLogTip.setText("Server log:");
         add(serverLogTip,BorderLayout.AFTER_LINE_ENDS);
+
         serverLog = new JTextArea();
-        serverLog.setPreferredSize(new Dimension(450,150));
+        //serverLog.setPreferredSize(new Dimension(450,150));
         serverLog.setRows(10);
+        serverLog.setColumns(50);
         serverLog.setEditable(false);
+        scrollableLog = new JScrollPane(serverLog, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         //UI_log.add(serverLogTip);
         //UI_log.add(serverLog);
-        add(serverLog,BorderLayout.SOUTH);
+        add(scrollableLog,BorderLayout.SOUTH);
         pack();
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setAlwaysOnTop(true);
         setResizable(false);
         setVisible(true);
@@ -108,7 +120,7 @@ class ChatServer extends JFrame{
         countUsers++;
         connectedCount.setText(String.valueOf(countUsers));
         serverLog.append("(" + DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalDateTime.now()) + ") User " + user.name + " is connected!\n");
-
+        scrollableLog.getVerticalScrollBar().setValue(scrollableLog.getVerticalScrollBar().getMaximum());
     }
     public static void main(String ... args) throws Exception {
         new ChatServer().process();
@@ -127,28 +139,39 @@ class ChatServer extends JFrame{
                 c.sendMessage("System", message);
     }
 
+    private void sendSingleServerMessage(String userName, Socket client){
+        for ( HandleClient c : clients )
+            if (c.getUserName().equals(userName) )
+                if(c.userSocket.equals(client))
+                c.sendMessage("System", "db_usernameIsTaken");
+    }
+
     private void sendSingleMessage(String userName, String message){
         for ( HandleClient c : clients )
             if (!c.getUserName().equals(userName) )
                 c.sendMessage("System", message);
     }
-
+    private boolean isUserExist(String userName){
+        //if(clients.size() == 1) return false;
+        for ( HandleClient c : clients )
+            if(c.getUserName().equals(userName)) return true;
+        return false;
+    }
     class  HandleClient extends Thread {
         String name;
         BufferedReader input;
         PrintWriter output;
+        Socket userSocket;
         HandleClient(Socket client) throws Exception {
+            userSocket = client;
+            sendMessageBySocket(client);
+        }
+        void sendMessageBySocket(Socket user) throws Exception{
             // get input and output streams
-            input = new BufferedReader( new InputStreamReader( client.getInputStream())) ;
-            output = new PrintWriter ( client.getOutputStream(),true);
+            input = new BufferedReader( new InputStreamReader( user.getInputStream()));
+            output = new PrintWriter ( user.getOutputStream(),true);
             // read name
             name  = input.readLine();
-            for(HandleClient clientSingle : clients){
-                if(name.equals(clientSingle.name)){
-                    output.println("refused_nicknameIsTaken");
-                    client.close();
-                }
-            }
             //users.add(name); // add to vector
             start();
         }
@@ -160,8 +183,8 @@ class ChatServer extends JFrame{
         }
         public void run()  {
             String line;
-            try    {
-                while(true)   {
+            try   {
+                while(true){
                     line = input.readLine();
                     if (line.equals("end") ) {
                         serverLog.append("(" + DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalDateTime.now()) + ") User " + getUserName() + " is disconnected!\n");
