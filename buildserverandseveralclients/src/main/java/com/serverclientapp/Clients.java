@@ -1,3 +1,5 @@
+package com.serverclientapp;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,7 +13,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.rmi.UnexpectedException;
 
-class  ChatClient extends JFrame implements ActionListener {
+class ChatClient extends JFrame implements ActionListener {
     private final String userName;
     private PrintWriter pw;
     private BufferedReader br;

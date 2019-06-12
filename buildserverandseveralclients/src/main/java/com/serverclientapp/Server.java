@@ -1,4 +1,4 @@
-// Chat Server runs at port no. 9999
+package com.serverclientapp;// Chat Server runs at port no. 9999
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import static java.lang.System.out;
 
 class ChatServer extends JFrame{
-    //private final Vector<String> users = new Vector<>();
     private final ArrayList<HandleClient> clients = new ArrayList<>();
     private ServerSocket serverAddress;
     private JTextArea serverLog;
@@ -94,20 +93,16 @@ class ChatServer extends JFrame{
         UI.add(UI_connected);
         add(UI, BorderLayout.WEST);
 
-        //JPanel UI_log = new JPanel();
         JLabel serverLogTip = new JLabel();
         serverLogTip.setText("Server log:");
         add(serverLogTip,BorderLayout.AFTER_LINE_ENDS);
 
         serverLog = new JTextArea();
-        //serverLog.setPreferredSize(new Dimension(450,150));
         serverLog.setRows(10);
         serverLog.setColumns(50);
         serverLog.setEditable(false);
         scrollableLog = new JScrollPane(serverLog, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        //UI_log.add(serverLogTip);
-        //UI_log.add(serverLog);
         add(scrollableLog,BorderLayout.SOUTH);
         pack();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -152,7 +147,6 @@ class ChatServer extends JFrame{
                 c.sendMessage("System", message);
     }
     private boolean isUserExist(String userName){
-        //if(clients.size() == 1) return false;
         for ( HandleClient c : clients )
             if(c.getUserName().equals(userName)) return true;
         return false;
@@ -161,7 +155,7 @@ class ChatServer extends JFrame{
         String name;
         BufferedReader input;
         PrintWriter output;
-        Socket userSocket;
+        final Socket userSocket;
         HandleClient(Socket client) throws Exception {
             userSocket = client;
             sendMessageBySocket(client);
@@ -172,7 +166,6 @@ class ChatServer extends JFrame{
             output = new PrintWriter ( user.getOutputStream(),true);
             // read name
             name  = input.readLine();
-            //users.add(name); // add to vector
             start();
         }
         void sendMessage(String userName, String msg)  {
