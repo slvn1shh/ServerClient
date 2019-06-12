@@ -184,7 +184,6 @@ class ChatServer extends JFrame{
                         countUsers--;
                         connectedCount.setText(String.valueOf(countUsers));
                         clients.remove(this);
-                        //users.remove(name);
                         break;
                     }
                     broadcast(name,line); // method  of outer class - send messages to all
