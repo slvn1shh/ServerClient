@@ -192,6 +192,7 @@ class ChatServer extends JFrame{
             } // try
             catch(Exception ex) {
                 System.out.println(ex.getMessage());
+                System.exit(0);
             }
         } // end of run()
     } // end of inner class
