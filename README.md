@@ -9,6 +9,10 @@ Just clone all project from repos using
 ```sh
 git clone https://github.com/slvn1shh/ServerClient
 ```
+To update project use
+```$xslt
+git checkout && git pull
+```
 ## Run
 ### Windows guide
 Prepare your system first. Execute:
