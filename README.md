@@ -17,7 +17,11 @@ setx JAVA_HOME=%path to JDK%\jdk-11.x.x
 setx M2_HOME=%path to maven%\maven-3.x.x
 setx PATH=%PATH%;%JAVA_HOME%\bin;%M2_HOME%\bin;
 ```
-Open command prompt in 'buildserverandseveralclients' folder
+where: 
+- **%path to JDK%** - path to your installed JDK
+- **%path to maven%** - path to your maven folder
+
+Open command prompt in "buildserverandseveralclients" folder
 - To build and run server part, use:
 ```
 mvn compile && mvn exec:java -Dexec.mainClass="com.serverclientapp.ChatServer"
