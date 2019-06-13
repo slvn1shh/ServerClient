@@ -58,6 +58,7 @@ class ChatClient extends JFrame implements ActionListener {
             }
         });
 
+        setMinimumSize(new Dimension(654,400));
         setVisible(true);
         setAlwaysOnTop(true);
         pack();
