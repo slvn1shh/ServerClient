@@ -26,6 +26,7 @@ class ChatClient extends JFrame implements ActionListener {
         pw = new PrintWriter(client.getOutputStream(),true);
         pw.println(userName);  // send name to server
         buildInterface();
+        setMinimumSize(new Dimension(getWidth(),getHeight())); //prevent unusual resizing
         new MessagesThread().start();  // create thread to listen for messages
     }
     private void buildInterface() {
@@ -58,9 +59,9 @@ class ChatClient extends JFrame implements ActionListener {
             }
         });
 
-        setMinimumSize(new Dimension(654,400));
         setVisible(true);
         setAlwaysOnTop(true);
+
         pack();
     }
 
