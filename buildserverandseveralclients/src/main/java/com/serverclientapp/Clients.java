@@ -50,10 +50,8 @@ class ChatClient extends JFrame implements ActionListener {
         btnExit.addActionListener(this);
         tfInput.requestFocus();
 
-        addWindowListener(new WindowAdapter() //handle exit via close button
-        {
-            public void windowClosing(WindowEvent e)
-            {
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
                 pw.println("end");
                 e.getWindow().dispose();
             }
