@@ -117,7 +117,8 @@ class ChatServer extends JFrame{
         serverLog.append("(" + DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalDateTime.now()) + ") User " + user.name + " is connected!\n");
         scrollableLog.getVerticalScrollBar().setValue(scrollableLog.getVerticalScrollBar().getMaximum());
     }
-    public static void main(String ... args) throws Exception {
+
+    public static void runner() throws Exception {
         new ChatServer().process();
     } // end of main
 

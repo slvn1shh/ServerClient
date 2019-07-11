@@ -74,7 +74,7 @@ class ChatClient extends JFrame implements ActionListener {
         }
     }
 
-    public static void main(String ... args) throws UnknownHostException {
+    public static void main(String...str) throws UnknownHostException {
 
         // take username from user
 
@@ -92,7 +92,7 @@ class ChatClient extends JFrame implements ActionListener {
             System.exit(-1);
         }
 
-    } // end of main
+    }
 
     // inner class for Messages Thread
     class  MessagesThread extends Thread {
